@@ -4,7 +4,7 @@ from concurrent.futures import ThreadPoolExecutor
 from utils.file_handler import FileHandler
 from utils.date_utils import DateUtils
 from utils.decorators import handle_api_errors
-from config import DATA_DIR, SUBFOLDERS
+from config import DATA_DIR, SUBFOLDERS, MAX_WORKERS
 import os
 import json
 import logging
@@ -14,7 +14,7 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(
 logger = logging.getLogger(__name__)
 
 app = Flask(__name__)
-CORS(app, resources={r"/api/*": {"origins": "*"}})  # Allow all origins for simplicity; restrict in production
+CORS(app, resources={r"/api/*": {"origins": "*"}})
 
 file_handler = FileHandler(DATA_DIR)
 date_utils = DateUtils()
@@ -50,12 +50,13 @@ def download_data():
         logger.info(f"Processing date: {date}")
 
         try:
+            start_time = time.time()
             file_handler.bulk_download_for_date(date, formatted, formatted_ma)
-            with ThreadPoolExecutor(max_workers=8) as executor:
+            with ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
                 for stock in nifty50_list:
                     executor.submit(file_handler.save_yf_5min_data, stock, date, formatted)
             success_dates.append(date)
-            progress["status"] = f"Completed {date}"
+            progress["status"] = f"Completed {date} in {time.time() - start_time:.2f}s"
         except Exception as e:
             logger.error(f"Error processing {date}: {str(e)}")
             failed_dates.append({"date": date, "error": str(e)})

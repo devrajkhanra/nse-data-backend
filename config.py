@@ -7,6 +7,9 @@ LOG_DIR = os.path.join(BASE_DIR, "logs")
 SUBFOLDERS = ["broad", "indice", "ma", "stock", "5min", "option"]
 NIFTY50_URL = "https://archives.nseindia.com/content/indices/ind_nifty50list.csv"
 
-RETRY_ATTEMPTS = 3
-RETRY_DELAY_SEC = 2
+RETRY_ATTEMPTS = 5
+RETRY_DELAY_SEC = 5
+REQUEST_TIMEOUT = 30
+REQUEST_DELAY = 2  # New: Delay between consecutive requests to avoid rate-limiting
+MAX_WORKERS = 4    # New: Reduced number of concurrent workers
 ENABLE_LOGGING = True

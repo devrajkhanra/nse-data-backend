@@ -8,6 +8,8 @@ from config import DATA_DIR, SUBFOLDERS, MAX_WORKERS
 import os
 import json
 import logging
+import time
+
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
